@@ -99,7 +99,7 @@ hover:text-gray-700 focus:outline-none">
                 </button>
             </x-slot>
             <x-slot name="content">
-                <x-dropdown-link :href="route('product-create')">
+                <x-dropdown-link :href="route('product-index')">
                     Product Master
                 </x-dropdown-link>
             </x-slot>

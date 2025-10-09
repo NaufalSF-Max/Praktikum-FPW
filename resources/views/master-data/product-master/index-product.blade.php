@@ -2,10 +2,10 @@
     <x-slot name="header">
         <h2 class="text-xl font-semibold leading-tight text-gray-800">
             {{ __('Dashboard') }}
-        </h2>fd aa
+        </h2>
     </x-slot>
 
-    <div class="container p-4 mx-auto">f
+    <div class="container p-4 mx-auto">
         <div class="overflow-x-auto">
             <a href="{{ route('product-create')}}">
                 <button class="px-6 py-4 text-white bg-green-500 border

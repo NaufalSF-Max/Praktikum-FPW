@@ -10,7 +10,7 @@ Route::post('/product', [ProductController::class, 'store'])->name('product-stor
 Route::get('/product/{id}', [ProductController::class, 'show']);
 Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('product-edit');
 Route::put('/product/{id}', [ProductController::class, 'update'])->name('product-update');
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product-deleted');
 
 Route::get('/', function () {
     return view('welcome');

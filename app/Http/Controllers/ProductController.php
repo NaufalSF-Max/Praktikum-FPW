@@ -12,7 +12,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::all();
+        $data = Product::paginate(2);
         return view("master-data.product-master.index-product", compact('data'));
     }
 
@@ -31,12 +31,12 @@ class ProductController extends Controller
     {
         // validasi input data
         $validasi_data = $request->validate([
-           'product_name' => 'required|string|max:255',
-           'unit' => 'required|string|max:50', 
-           'type' => 'required|string|max:50',
-           'information' => 'nullable|string',
-           'qty' => 'required|integer',
-           'producer' => 'required|string|max:255',
+            'product_name' => 'required|string|max:255',
+            'unit' => 'required|string|max:50',
+            'type' => 'required|string|max:50',
+            'information' => 'nullable|string',
+            'qty' => 'required|integer',
+            'producer' => 'required|string|max:255',
         ]);
 
         // Proses simpan data ke dalam database
@@ -50,7 +50,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        return view('master-data.product-master.detail-product', compact('product'));
     }
 
     /**
@@ -69,7 +70,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'product_name' => 'required|string|max:255',
-            'unit' => 'required|string|max:255', 
+            'unit' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'information' => 'nullable|string',
             'qty' => 'required|integer|min:1',

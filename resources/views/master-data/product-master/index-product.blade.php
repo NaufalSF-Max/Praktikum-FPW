@@ -18,6 +18,12 @@
                 </div>
             @endif
 
+            <form method="GET" action="{{ route('product-index') }}" class="mb-4 flex items-
+            center">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..." class="w-1/4 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <button type="submit" class="ml-2 rounded-lg bg-green-500 px-4 py-2 text-white shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">Cari</button>
+            </form>
+
             <a href="{{ route('product-create')}}">
                 <button class="px-6 py-4 text-white bg-green-500 border
 border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -41,7 +47,7 @@ border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focu
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($data as $item)
+                    @forelse ($data as $item)
                         <tr class="bg-white">
                             <td class="px-4 py-2 border border-gray-200">{{ $item->id }}</td>
                             <td class="px-4 py-2 border border-gray-200 hover:text-blue-500 hover:underline">
@@ -61,13 +67,16 @@ border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focu
                                     onclick="confirmDelete('{{ route('product-deleted', $item->id) }}')">Hapus</button>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <p class="mb-4 tect-center text-2xl font-bold text-red-600"> No Products Found</p>
+                    @endforelse
                     <!-- Tambahkan baris lainnya sesuai kebutuhan -->
                 </tbody>
             </table>
             {{-- Pagination --}}
             <div class="mt-4">
-                {{ $data->links() }}
+                {{-- {{ $products->links() }} --}}
+                {{ $data->appends(['search' => request('search')])->links() }}
             </div>
         </div>
     </div>

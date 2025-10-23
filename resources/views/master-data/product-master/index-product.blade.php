@@ -25,24 +25,62 @@
             </form>
 
             <a href="{{ route('product-create')}}">
-                <button class="px-6 py-4 text-white bg-green-500 border
-border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <button class="px-6 py-4 text-white bg-green-500 border border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
                     Add product data
                 </button>
             </a>
 
             <table class="min-w-full border border-collapse border-gray-200">
 
-                <thead> Menampilkan data dari database kedalam tabel
-
+                <thead>
                     <tr class="bg-gray-100">
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">ID</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">Product Name</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">Unit</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">Type</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">information</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">qty</th>
-                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">producer</th>
+                        
+                        @php
+                            $direction_toggle = $direction == 'asc' ? 'desc' : 'asc';
+                        @endphp
+
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'id', 'direction' => ($sort == 'id') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                ID
+                                @if($sort == 'id') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'product_name', 'direction' => ($sort == 'product_name') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Product Name
+                                @if($sort == 'product_name') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'unit', 'direction' => ($sort == 'unit') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Unit
+                                @if($sort == 'unit') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'type', 'direction' => ($sort == 'type') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Type
+                                @if($sort == 'type') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'information', 'direction' => ($sort == 'information') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Information
+                                @if($sort == 'information') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'qty', 'direction' => ($sort == 'qty') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Qty
+                                @if($sort == 'qty') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'producer', 'direction' => ($sort == 'producer') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Producer
+                                @if($sort == 'producer') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
                         <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">Aksi</th>
                     </tr>
                 </thead>
@@ -75,8 +113,8 @@ border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focu
             </table>
             {{-- Pagination --}}
             <div class="mt-4">
-                {{-- {{ $products->links() }} --}}
-                {{ $data->appends(['search' => request('search')])->links() }}
+                {{-- Ini sudah otomatis membawa parameter search, sort, dan direction --}}
+                {{ $data->links() }}
             </div>
         </div>
     </div>
@@ -105,6 +143,14 @@ border-green-500 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focu
                 form.submit();
             }
         }
+
+        @if(session('success'))
+            alert("{{ session('success') }}");
+        @endif
+
+        @if(session('error'))
+            alert("{{ session('error') }}");
+        @endif
     </script>
 
 </x-app-layout>

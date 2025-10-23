@@ -20,13 +20,35 @@ class ProductController extends Controller
             // Melakukan pencarian berdasarkan nama produk atau informasi
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('product_name', 'like', '%' . $search . '%');
+                $q->where('product_name', 'like', '%' . $search . '%')
+                  ->orWhere('information', 'like', '%' . $search . '%'); // Bisa ditambahkan kolom lain
             });
         }
 
-        // Jika tidak ada parameter ‘search’, langsung ambil produk dengan paginasi
-        $data = $query->paginate(2);
-        return view("master-data.product-master.index-product", compact('data'));
+        // --- AWAL LOGIKA SORTING (BARU) ---
+        
+        // Ambil parameter sort dan direction dari request, beri nilai default
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'asc');
+
+        // Daftar kolom yang boleh di-sort (untuk keamanan)
+        $sortableColumns = ['id', 'product_name', 'unit', 'type', 'information', 'qty', 'producer'];
+
+        // Terapkan orderBy jika kolom dan arahnya valid
+        if (in_array($sort, $sortableColumns) && in_array($direction, ['asc', 'desc'])) {
+            $query->orderBy($sort, $direction);
+        }
+        
+        // --- AKHIR LOGIKA SORTING ---
+
+
+        // --- MODIFIKASI PAGINASI ---
+        // 'appends($request->except('page'))' akan membawa semua parameter 
+        // (termasuk search, sort, direction) saat pindah halaman.
+        $data = $query->paginate(2)->appends($request->except('page'));
+
+        // Kirim $data, $sort, dan $direction ke view
+        return view("master-data.product-master.index-product", compact('data', 'sort', 'direction'));
     }
 
     /**
@@ -52,10 +74,17 @@ class ProductController extends Controller
             'producer' => 'required|string|max:255',
         ]);
 
-        // Proses simpan data ke dalam database
-        product::create($validasi_data);
+        try {
+            // Proses simpan data ke dalam database
+            product::create($validasi_data);
+    
+            // DIUBAH: Redirect ke halaman INDEX (view data) jika berhasil
+            return redirect()->route('product-index')->with('success', 'Product created successfully.');
 
-        return redirect()->back()->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            // BARU: Redirect kembali ke form create jika gagal
+            return redirect()->back()->with('error', 'Failed to create product: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -90,17 +119,24 @@ class ProductController extends Controller
             'producer' => 'required|string|max:255',
         ]);
 
-        $product = Product::findOrFail($id);
-        $product->update([
-            'product_name' => $request->product_name,
-            'unit' => $request->unit,
-            'type' => $request->type,
-            'information' => $request->information,
-            'qty' => $request->qty,
-            'producer' => $request->producer,
-        ]);
+        try {
+            $product = Product::findOrFail($id);
+            $product->update([
+                'product_name' => $request->product_name,
+                'unit' => $request->unit,
+                'type' => $request->type,
+                'information' => $request->information,
+                'qty' => $request->qty,
+                'producer' => $request->producer,
+            ]);
+    
+            // DIUBAH: Redirect ke halaman INDEX (view data) jika berhasil
+            return redirect()->route('product-index')->with('success', 'Product updated successfully.');
 
-        return redirect()->back()->with('success', 'Product updated successfully.');
+        } catch (\Exception $e) {
+            // BARU: Redirect kembali ke form edit jika gagal
+            return redirect()->back()->with('error', 'Failed to update product: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**

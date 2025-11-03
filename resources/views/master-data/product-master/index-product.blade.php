@@ -29,6 +29,7 @@
                     Add product data
                 </button>
             </a>
+            <a href="{{ route('product-export-excel') }}">Export ke Excel</a>
 
             <table class="min-w-full border border-collapse border-gray-200">
 

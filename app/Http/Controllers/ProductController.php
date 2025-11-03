@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\product;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+use App\Exports\ProductsExport;
 
 class ProductController extends Controller
 {
@@ -150,5 +153,34 @@ class ProductController extends Controller
             return redirect()->back()->with('success', 'Product berhasil dihapus.');
         }
         return redirect()->back()->with('error', 'Product tidak ditemukan.');
+    }
+
+    public function exportExcel() {
+        return Excel::download(new ProductsExport, 'products.xlsx');
+    }
+    
+    public function exportPDF()
+    {
+        // 1. Ambil semua data produk dari database
+        $products = product::all();
+
+        // 2. Load view Blade yang sudah Anda buat (export-pdf.blade.php)
+        //    dan teruskan data $products ke dalamnya
+        $pdf = PDF::loadView('master-data.product-master.export-pdf', compact('products'));
+
+        // 3. Download file PDF dengan nama kustom
+        return $pdf->download('rekap-mutasi-stock.pdf');
+    }
+
+    public function exportHTML()
+    {
+        // 1. Ambil semua data produk
+        $products = product::all();
+
+        // 2. Render view export-pdf.blade.php sebagai string HTML
+        $html = view('master-data.product-master.export-pdf', compact('products'))->render();
+
+        // 3. Kembalikan HTML ini dalam format JSON
+        return response()->json(['html' => $html]);
     }
 }

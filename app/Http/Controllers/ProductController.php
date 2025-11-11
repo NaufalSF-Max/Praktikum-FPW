@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\product;
+use App\Models\Supplier;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Exports\ProductsExport;
@@ -16,7 +17,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         // Membuat query builder baru untuk model Product
-        $query = Product::query();
+        // Langsung lakukan eager loading relasi 'supplier'
+        $query = Product::with('supplier');
 
         // Cek apakah ada parameter 'search' di request
         if ($request->has('search') && $request->search != '') {
@@ -59,7 +61,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view("master-data.product-master.create-product");
+        $suppliers = Supplier::all(); // Ambil semua data supplier
+        // Kirim data suppliers ke view
+        return view("master-data.product-master.create-product", compact('suppliers'));
     }
 
     /**
@@ -75,6 +79,7 @@ class ProductController extends Controller
             'information' => 'nullable|string',
             'qty' => 'required|integer',
             'producer' => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
         try {
@@ -105,7 +110,9 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         $product = Product::findOrFail($id);
-        return view('master-data.product-master.edit-product', compact('product'));
+        $suppliers = Supplier::all(); // Ambil semua data supplier
+        // Kirim data product dan suppliers ke view
+        return view('master-data.product-master.edit-product', compact('product', 'suppliers'));
     }
 
     /**
@@ -120,6 +127,7 @@ class ProductController extends Controller
             'information' => 'nullable|string',
             'qty' => 'required|integer|min:1',
             'producer' => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
         try {
@@ -131,6 +139,7 @@ class ProductController extends Controller
                 'information' => $request->information,
                 'qty' => $request->qty,
                 'producer' => $request->producer,
+                'supplier_id' => $request->supplier_id,
             ]);
     
             // DIUBAH: Redirect ke halaman INDEX (view data) jika berhasil

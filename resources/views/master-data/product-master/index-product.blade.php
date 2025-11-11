@@ -84,6 +84,12 @@
                                 @if($sort == 'producer') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
                             </a>
                         </th>
+                        <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">
+                            <a href="{{ route('product-index', ['sort' => 'supplier_id', 'direction' => ($sort == 'supplier_id') ? $direction_toggle : 'asc', 'search' => request('search')]) }}">
+                                Supplier Name
+                                @if($sort == 'supplier_id') <span>{{ $direction == 'asc' ? '▲' : '▼' }}</span> @endif
+                            </a>
+                        </th>
                         <th class="px-4 py-2 text-left text-gray-600 border border-gray-200">Aksi</th>
                     </tr>
                 </thead>
@@ -101,6 +107,11 @@
                             <td class="px-4 py-2 border border-gray-200">{{$item->information }}</td>
                             <td class="px-4 py-2 border border-gray-200">{{$item->qty }}</td>
                             <td class="px-4 py-2 border border-gray-200">{{$item->producer }}</td>
+                            <td class="px-4 py-2 border border-gray-200">
+                                {{-- Akses relasi 'supplier' dan ambil 'supplier_name' --}}
+                                {{-- Jika supplier tidak ada, tampilkan 'No supplier' --}}
+                                {{ $item->supplier->supplier_name ?? 'No supplier' }} 
+                            </td>
                             <td class="px-4 py-2 border border-gray-200">
                                 <a href="{{ route('product-edit', $item->id) }}"
                                     class="px-2 text-blue-600 hover:text-blue-800">Edit</a>

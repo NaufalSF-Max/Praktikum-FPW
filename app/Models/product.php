@@ -15,6 +15,16 @@ class product extends Model
         'type',
         'information',
         'qty',
-        'producer'
+        'producer',
+        'supplier_id' // Tambahkan ini [cite: 622]
     ];
+
+    /**
+     * Mendefinisikan relasi many-to-one ke model Supplier.
+     * Satu produk dimiliki oleh satu supplier.
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }
